@@ -15,16 +15,16 @@ cd $HOME
 Cambia el directorio hacia HOME
 
 mkdir Projects
-Crea el directorio llamado “Projects”
+Crea el directorio llamado "Projects"
 
 mkdir .aws
-Crea el directorio llamado “.aws”
+Crea el directorio llamado ".aws"
 
 cd .aws
-Cambia el directorio hacia el folder “.aws”
+Cambia el directorio hacia el folder ".aws"
 
 touch credentials
-Crea el archivo con el nombre “credentials”
+Crea el archivo con el nombre "credentials"
 
 cd ..
 Se mueve un directorio hacia arriba
@@ -57,7 +57,7 @@ echo " **************** Installing AWS CLI **************** "
 Imprime en consola el texto escrito entre comillas
 
 sudo apt-get -y install python-pip
-Instala el paquete python-pip mediante APT, asumiendo que todas las respuestas hacia las preguntas del sistema son “si” (con las credenciales de superusuario)
+Instala el paquete python-pip mediante APT, asumiendo que todas las respuestas hacia las preguntas del sistema son "si" (con las credenciales de superusuario)
 
 sudo pip install --upgrade pip
 Instala la versión más nueva del paquete pip mediante pip (con las credenciales de superusuario)
@@ -101,7 +101,7 @@ Crea un link simbólico entre los directorios /opt/dotnet/dotnet y /usr/local/bin
 
 3.Create a grunt task to deploy your website to your own bucket in S3. 30 points.
 
-Para llevar a cabo esta acción, primero se instaló grunt-aws-s3 en el Proyecto. Después, se le adjuntó al archivo Gruntfile el código “grunt.loadNpmTasks(‘grunt-aws-s3’). Lo que sigue es crear un archivo que se llama “deploy-keys.json”, en donde se encuentra el siguiente código:
+Para llevar a cabo esta acción, primero se instaló grunt-aws-s3 en el Proyecto. Después, se le adjuntó al archivo Gruntfile el código "grunt.loadNpmTasks('grunt-aws-s3'). Lo que sigue es crear un archivo que se llama "deploy-keys.json", en donde se encuentra el siguiente código:
 
 {
     "AWSAccessKeyId": "",
@@ -113,24 +113,50 @@ Después se agregó el siguiente código en la parte de grunt.initConfig:
 
 aws: grunt.file.readJSON('deploy-keys.json'), // Load deploy variables
 aws_s3: {
-    options: {
-        accessKeyId: '<%= aws.AWSAccessKeyId %>;',
-        secretAccessKey: '<%= aws.AWSSecretKey %>;',
-        region: '<%= aws.AWSRegion %>;',
+      options: {
+        accessKeyId: '<%= aws.AWSAccessKeyId %>', // Use the variables
+        secretAccessKey: '<%= aws.AWSSecretKey %>', // You can also use env variables
+        region: 'us-east-1',
         uploadConcurrency: 5, // 5 simultaneous uploads
         downloadConcurrency: 5 // 5 simultaneous downloads
-    },
-    production: {
+      },
+      production: {
         options: {
-            bucket: '',
+          bucket: 'favelix',
+          differential: true, //Upload files that have changed
+          mime: {
+            'dist/assets/production/LICENCE': 'text/plain'
+          }
         },
         files: [
-            {expand: true, cwd: '/dist', src: ['**'], dest: '/'}
+          {expand: true, cwd: 'dist/', src: ['**'], dest: '/'},
+          // CacheControl only applied to the assets folder
+          // LICENCE inside that folder will have ContentType equal to 'text/plain'
         ]
+      },
+      clean_production: {
+        options: {
+          bucket: 'favelix',
+          debug: true // Doesn't actually delete but shows log
+        },
+        files: [
+          {dest: 'app/', action: 'delete'},
+          {dest: 'assets/', exclude: "**/*.tgz", action: 'delete'}, // will not delete the tgz
+          {dest: 'assets/large/', exclude: "**/*copy*", flipExclude: true, action: 'delete'}, // will delete everything that has copy in the name
+        ]
+      },
+      download_production: {
+        options: {
+          bucket: 'favelix'
+        },
+        files: [
+          {dest: 'app/', cwd: 'backup/', action: 'download'}, // Downloads the content of app/ to backup/
+          {dest: 'assets/', cwd: 'backup-assets/', exclude: "**/*copy*", action: 'download'}, // Downloads everything which doesn't have copy in the name
+        ]
+      }
     },
-},
 
-Por último, se agregó el código para registrar la tarea con el nombre “deploy” con los siguientes comandos:
+Por último, se agregó el código para registrar la tarea con el nombre "deploy" con los siguientes comandos:
 
 grunt.registerTask('deploy', [
     'jshint',
@@ -145,19 +171,19 @@ $grunt deploy
 
 4.Explain how routes work in angular and a code example. 10 points.
 
-Para acceder a una ruta de una página web, debe de haber un archivo de javascript en la estructura de la aplicación que contenga un “route provider”. Este route provider determina la relación entre las rutas URL al correr la aplicación, y los controladores dentro de la aplicación. Por ejemplo:
+Para acceder a una ruta de una página web, debe de haber un archivo de javascript en la estructura de la aplicación que contenga un "route provider". Este route provider determina la relación entre las rutas URL al correr la aplicación, y los controladores dentro de la aplicación. Por ejemplo:
 
 $routeProvider
-	.when(‘/main’, {
-		templateUrl: “views/main.html”,
-		controller: ‘MainCtrl’,
-		controllerAs: ‘main’
+	.when('/main', {
+		templateUrl: 'views/main.html',
+		controller: 'MainCtrl',
+		controllerAs: 'main'
 	})
 	.otherwise({
-		redirectTo: ‘/main’
+		redirectTo: '/main'
 	});
 
-En este ejemplo, se determina que, cuando el usuario escribe el nombre del URL con “/main” adjuntado, la aplicación muestra la página del archivo “main.html”, y utiliza el controlador MainCtrl, y se le adjudica el alias de “main”. Pero en caso de que el URL escrito no concuerda con ninguno de los determinados en la aplicación, la aplicación se dirige al código de “otherwise”, y en este código redirige al usuario a página “main”.
+En este ejemplo, se determina que, cuando el usuario escribe el nombre del URL con "/main" adjuntado, la aplicación muestra la página del archivo "main.html", y utiliza el controlador MainCtrl, y se le adjudica el alias de "main". Pero en caso de que el URL escrito no concuerda con ninguno de los determinados en la aplicación, la aplicación se dirige al código de "otherwise", y en este código redirige al usuario a página "main".
 
 5.Explain how you can have more than one access key in your computer and how to use each one. Provide code or configuration examples. 10 points.
 
@@ -171,7 +197,7 @@ aws_secret_access_key=*
 aws_access_key_id=*
 aws_secret_access_key=*
 
-La primera sección del texto corresponde al access key del perfil “default”, mientras que la segunda sección le pertenece al perfil “user2”. En caso de que cada usuario tenga regiones y outputs distintos, estos datos se determinan en el archivo ~/.aws/config, de la siguiente manera:
+La primera sección del texto corresponde al access key del perfil "default", mientras que la segunda sección le pertenece al perfil "user2". En caso de que cada usuario tenga regiones y outputs distintos, estos datos se determinan en el archivo ~/.aws/config, de la siguiente manera:
 
 [default]
 region=us-west-2
@@ -186,5 +212,5 @@ Para utilizar cada perfil en AWS CLI, solamente se le adjunta la opción --profil
 $ aws s3 sync . s3://bucket --profile user
 
 
-6.	Explain what are you going to do different this semester based on last semester experience. 10 points.
+6.Explain what are you going to do different this semester based on last semester experience. 10 points.
 Trabajaré más en los proyectos desde temprano, buscando terminarlos lo más pronto posible, sin menospreciar la importancia de la calidad que debe tener el producto.
