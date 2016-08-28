@@ -8,7 +8,7 @@
  * Controller of the favelixApp
  */
 angular.module('favelixApp')
-  .controller('AboutCtrl', function () {
+  .controller('AlumnoCtrl', function () {
     this.awesomeThings = [
       'HTML5 Boilerplate',
       'AngularJS',

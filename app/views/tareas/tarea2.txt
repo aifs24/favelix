@@ -1,0 +1,310 @@
+Tarea 2
+1. Automate the deployment of your web site using Grunt. 15 points.
+
+(Texto de la tarea 1)
+Para llevar a cabo esta acción, primero se instaló grunt-aws-s3 en el Proyecto. Después, se le adjuntó al archivo Gruntfile el código “grunt.loadNpmTasks(‘grunt-aws-s3’). Lo que sigue es crear un archivo que se llama “deploy-keys.json”, en donde se encuentra el siguiente código:
+
+{
+    "AWSAccessKeyId": "",
+    "AWSSecretKey": "",
+    "AWSRegion": ""
+}
+
+Después se agregó el siguiente código en la parte de grunt.initConfig:
+
+aws_s3: {
+      options: {
+        accessKeyId: '<%= aws.AWSAccessKeyId %>', // Use the variables
+        secretAccessKey: '<%= aws.AWSSecretKey %>', // You can also use env variables
+        region: 'us-east-1',
+        uploadConcurrency: 5, // 5 simultaneous uploads
+        downloadConcurrency: 5 // 5 simultaneous downloads
+      },
+      production: {
+        options: {
+          bucket: 'favelix',
+          differential: true, //Upload files that have changed
+          mime: {
+            'dist/assets/production/LICENCE': 'text/plain'
+          }
+        },
+        files: [
+          {expand: true, cwd: 'dist/', src: ['**'], dest: '/'},
+          // CacheControl only applied to the assets folder
+          // LICENCE inside that folder will have ContentType equal to 'text/plain'
+        ]
+      },
+      clean_production: {
+        options: {
+          bucket: 'favelix',
+          debug: true // Doesn't actually delete but shows log
+        },
+        files: [
+          {dest: 'app/', action: 'delete'},
+          {dest: 'assets/', exclude: "**/*.tgz", action: 'delete'}, // will not delete the tgz
+          {dest: 'assets/large/', exclude: "**/*copy*", flipExclude: true, action: 'delete'}, // will delete everything that has copy in the name
+        ]
+      },
+      download_production: {
+        options: {
+          bucket: 'favelix'
+        },
+        files: [
+          {dest: 'app/', cwd: 'backup/', action: 'download'}, // Downloads the content of app/ to backup/
+          {dest: 'assets/', cwd: 'backup-assets/', exclude: "**/*copy*", action: 'download'}, // Downloads everything which doesn't have copy in the name
+        ]
+      }
+    },
+
+Por último, se agregó el código para registrar la tarea con el nombre “deploy” con los siguientes comandos:
+
+grunt.registerTask('deploy', [
+    'jshint',
+    'build',
+    'aws_s3'
+]);
+
+Con esto, se puede ejecutar el siguiente código en la terminal:
+
+$grunt deploy
+
+
+2. Create a Hello World in NodeJs and create a tutorial about it. 15 points.
+
+Primero, se crea un archivo (para este ejercicio, el nombre del archivo es “hello.js”). En este archivo, se escribe la siguiente línea de código:
+
+console.log(“Hello World”);
+
+En la terminal del juego, se dirige hacia el directorio en el cual se encuentra el archivo, y se escribe el siguiente comando en la terminal.
+
+node hello.js
+
+Esta línea ejecuta el archivo, el cual imprime el texto “Hello World” en la consola.
+ 
+3. Install the aws-sdk for nodejs and create a tutorial about it. 15 points.
+
+Para instalar aws-sdk, en la terminal se accede al directorio del proyecto en donde se usará el paquete, y se escribe el código:
+
+npm install aws-sdk –save-dev
+
+Este commando instala el paquete dentro del Proyecto, y se guarda su dependencia en el archivo de packages.json.
+ 
+4. Create a code in NodeJs that will tell you the version/date of your website in S3. 15 points.
+
+Para crear el siguiente código, se necesita tener instalado aws-sdk, y un archivo que contenga las llaves de acceso que se utilizarán para acceder al bucket.
+
+var AWS = require(‘aws-sdk’);
+AWS.config.loadFromPath(‘deploy-keys.json’);
+var s3 = new AWS.S3();
+var date;
+
+s3.listObjects({Bucket : ‘favelix’}, function(err, data){
+	if (err)
+		console.log(err, err.stack);
+	else{
+		for(x in data.Contents){
+			if(date < data.Contents[x].LastModified || date == null){
+				date = data.Contents[x].LastModified;
+			}
+		}
+		console.log(“Date of Website: ” + date);
+	}
+});
+
+La primera línea hace referencia al paquete de aws-sdk, y se crea la variable s3 mediante el uso de este paquete. La segunda línea consigue las llaves del archivo “deploy-keys.json”. La cuarta línea crea la variable “date” para su uso en el método que se usará a continuación. Este método consigue la lista de objetos ubicados en el bucket escrito como parámetro. Teniendo esta lista, se pasa por cada objeto de ésta y se consigue la última fecha de modificación de todos los objetos. Por último, se imprime este valor en la consola.
+
+5. Read and explain the post about Microservices Trade-Offs by Martin Fowler (http://martinfowler.com/articles/microservice-trade-offs.html). 15 points.
+
+Este artículo explica tanto las ventajas como las desventajas del uso de la arquitectura de microservices. Las ventajas de los microservicios son el crecimiento de los límites y del tamaño de los módulos que un sistema usa, el lanzamiento constante de versiones de un producto debido a la independencia de los módulos, y la diversidad de las tecnologías que usan los microservices. Por otro lado, sus desventajas incluyen el rendimiento de las llamadas remotas, las llamadas asíncronas, y su confiabilidad debido a que son sistemas distribuidos, la poca consistencia entre todos los módulos de los sistemas, y la complejidad operacional de los microservicios.
+
+6. Create a comparison table between AWS, Azure and Google Cloud. 15 points.
+
+AWS
+-Pricing
+	-Free Tier
+	-On-Demand
+	-Reserved
+	-Spot
+	-Dedicated
+-Services
+	-Compute
+	-Storage & Content
+	-Database
+	-Networking
+	-Analytics
+	-Enterprise Applications
+	-Mobile Services
+	-Internet of Things
+	-Developer Tools
+	-Management Tools
+	-Security & Identity
+	-Application Services
+-Regions
+	-North Virginia
+	-North California
+	-Oregon
+	-Sao Paulo
+	-Frankfurt
+	-Ireland
+	-Mumbai
+	-Singapore
+	-Beijing
+	-Seoul
+	-Tokyo
+	-Sydney
+-Customers
+	-Netflix
+	-MLB Advanced Media
+	-Nokia
+	-Yelp
+	-Comcast
+	-Adobe
+	-Pinterest
+	-Lionsgate
+	-Lyft
+	-Samsung
+-Pros*
+	-Highest number of services and options available
+	-EC2 – Increase or decrease storage as needed
+	-Choose OS, programming language, web application platform, database and other services
+	-Manage security and permissions
+	-Versioning
+-Cons*
+	-ELB is not equipped to handle as many requests as it receives
+	-Lacks customer support, gearing toward a more technically savvy group of consumers and/or those with access to tech support
+	-The number of choices can be confusing to those who may not speak the language of technology
+	-Transactions can be expensive. You pay for activity in addition to storage
+	-Communication between your EDM software and AWS can be difficult to setup	
+
+Azure
+-Pricing
+	-Pay-As-You-Go Subscriptions
+	-Prepaid Subscriptions
+	-Microsoft Resellers
+	-Enterprise Agreements
+	-Azure Compute Option
+	-Azure Hybrid Use Benefit
+	-Enterprise Agreement Support Offer
+	-Azure Government customers
+	-Suites
+	-Preview
+	-Featured
+	-Services
+	-Compute
+	-Networking
+	-Storage
+	-Web + Mobile
+	-Databases
+	-Intelligence + Analytics
+	-Internet of Things
+	-Enterprise Integration
+	-Security + Identity
+	-Developer Tools
+	-Monitoring + Management
+-Regions
+	-Iowa
+	-Virginia
+	-Illinois
+	-Texas
+	-California
+	-Ireland
+	-Netherlands
+	-Hong Kong
+	-Singapore
+	-Tokyo
+	-Osaka
+	-Sao Paulo
+	-New South Wales
+	-Pune
+	-Chennai
+	-Mumbai
+	-Shanghai
+	-Beijing
+	-Toronto
+	-Quebec City
+-Customers
+	-Willis Towers Watson
+	-GE Healthcare
+	-Chronodrive
+	-Serko
+	-Pearson
+	-NBC News Digital
+	-3M
+	-Nascar
+	-Alaska Airlines
+	-Cornell University
+-Pros*
+	-Has the capability for developers and users to easily create, maintain and deploy applications
+	-Fully scalable, offers open access across multiple frameworks, languages and tools
+	-Comprised of many different infrastructures and service modules
+-Cons*
+	-Customer service is confusing and data is hosted globally. If you have data restrictions where it must be housed in a certain country, you must verify/specify with Microsoft.
+	-Comparatively expensive
+	-You are charged extra for paying as you go (versus paying in blocks of $100.00).
+
+Google Cloud
+-Pricing
+	-On-Demand Prices
+	-Sub-Hour Billing
+	-Sustained-Use Discounts
+	-Startup Programs
+	-Education Grants
+-Services
+	-Compute
+	-Storage and Databases
+	-Networking
+	-Bag Data
+	-Machine Learning
+	-Management Tools
+	-Developer Tools
+	-Identity & Security
+-Regions
+	-Iowa
+	-South Carolina
+	-Oregon
+	-Georgia
+	-North Carolina
+	-Oklahoma
+	-Belgium
+	-Taiwan
+-Customers
+	-Best Buy
+	-Coca Cola
+	-Domino’s
+	-HTC
+	-London Heathrow
+	-Philips
+	-Rovio
+	-Sky News
+	-Sony Music
+	-Ubisoft
+-Pros*
+	-Strong Infrastructure (IaaS) and Platform (PaaS) options.
+	-Pay-per-use option taken to the extreme: billing minute by minute
+	-Google Compute Engine’s load balancers don’t need pre-warming.
+-Cons*
+	-Not many options of services as others
+	-Lacks widespread geographical distribution, just three regions (US, Europe and Asia)
+	-Google’s App Engine is limited to Java, Python, PHP and Google Go.
+
+*Pros & cons are based on webpage authors (see the Bibliography Section for the links used to obtain the information on this table).
+
+7. Read at least 5 sections of Seth Godin’s Manifesto: “Stop Stealing Dreams” and tell me what you think about it. 10 points.
+
+El texto contiene unos puntos muy interesantes, especialmente los relacionados con el sistema escolar. La manera en la cual se aprueban materias generalmente se puede describir como “obedecer las reglas de los profesores”. Por otro lado, la implementación de exámenes como pruebas de éxito o de fracaso es perfecto para casos completamente teóricos, pero no dejan mucha experiencia a los alumnos. En un caso práctico, es más propenso que los alumnos recuerden en lo que se equivocaron, mientras que en los exámenes, es muy difícil que alguien recuerde las preguntas mal contestadas, debido a que no lo experimentaron.
+
+Bibliografía:
+-Amazon. (s.f.) Case Studies & Customer Success. Recuperado el 27 de agosto de 2016, de: https://aws.amazon.com/solutions/case-studies/
+-Amazon. (s.f.) Cloud Products & Services. Recuperado el 27 de agosto de 2016, de: https://aws.amazon.com/products/?nc1=f_cc
+-Amazon. (s.f.) Global Infrastructure. Recuperado el 27 de agosto de 2016, de: https://aws.amazon.com/about-aws/global-infrastructure/
+-Amazon. (s.f.) Purchasing Options. Recuperado el 27 de agosto de 2016, de: https://aws.amazon.com/ec2/purchasing-options/
+-Google. (s.f.) Global Locations – Regions & Zones. Recuperado el 27 de agosto de 2016, de: https://cloud.google.com/about/locations/#locations
+-Google. (s.f.) Pricing –– Price Performance Leadership. Recuperado el 27 de agosto de 2016, de: https://cloud.google.com/pricing/
+-Google. (s.f.) Pricing Philosophy. Recuperado el 27 de agosto de 2016, de: https://cloud.google.com/pricing/philosophy/
+-Google. (s.f.) Companies Using Google Cloud Services. Recuperado el 27 de agosto de 2016, de: https://cloud.google.com/customers/
+-Hambrick, S. (2015) Amazon Web Services Storage: Pros and Cons for Document Management. Recuperado el 27 de agosto de 2016, de: https://www.datastorageinc.com/blog/amazon-web-services-storage-pros-and-cons-for-document-management
+-Lyle, T. (2015) The Four Major Cloud Players: Pros and Cons. Recuperado el 27 de agosto de 2016, de: https://www.techopedia.com/2/31280/trends/the-four-major-cloud-players-pros-and-cons
+-Microsoft. (s.f.) Customer and Partner Success Stories for Microsoft Azure. Recuperado el 27 de agosto de 2016, de: https://azure.microsoft.com/en-us/case-studies/?page=6
+-Microsoft. (s.f.) Directory of Azure Cloud Services. Recuperado el 27 de agosto de 2016, de: https://azure.microsoft.com/en-us/services/
+-Microsoft. (s.f.) Pricing Overview – How Azure pricing works. Recuperado el 27 de agosto de 2016, de: https://azure.microsoft.com/en-us/pricing/
+-Microsoft. (s.f.) Azure Cloud Services by Location or Region. Recuperado el 27 de agosto de 2016, de: https://azure.microsoft.com/en-us/regions/
