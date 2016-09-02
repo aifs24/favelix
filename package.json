@@ -41,5 +41,8 @@
   },
   "scripts": {
     "test": "karma start test/karma.conf.js"
+  },
+  "dependencies": {
+    "request": "^2.74.0"
   }
 }
