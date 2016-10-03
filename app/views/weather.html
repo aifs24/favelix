@@ -1,0 +1,12 @@
+<div ng-controller="WeatherCtrl">
+  <div class="container">
+    <p>Ingresa una lista de ciudades, separadas por comas:</p>
+    <input type="text" ng-model="ciudades">
+    <input type="button" ng-click="getWeather()" value="Get Weather">
+    <br>
+    <div ng-repeat="result in results">
+      {{result}}
+    </div>
+  </div>
+</div>
+
