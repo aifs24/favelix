@@ -8,3 +8,6 @@
 /.idea
 /assignments/image.png
 /assignments/nasa.jpg
+/app/scripts/controllers/slackendpoint.js
+/app/views/slackendpoint.html
+/test/spec/controllers/slackendpoint.js
