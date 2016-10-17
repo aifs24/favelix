@@ -44,6 +44,16 @@ angular
         controller: 'SlackendpointCtrl',
         controllerAs: 'slackEndPoint'
       })
+      .when('/weatherSecure', {
+        templateUrl: 'views/weathersecure.html',
+        controller: 'WeathersecureCtrl',
+        controllerAs: 'weatherSecure'
+      })
+      .when('/weatherStats', {
+        templateUrl: 'views/weatherstats.html',
+        controller: 'WeatherstatsCtrl',
+        controllerAs: 'weatherStats'
+      })
       .otherwise({
         redirectTo: '/'
       });

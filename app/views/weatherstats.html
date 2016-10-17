@@ -1,0 +1,12 @@
+<div ng-controller="WeatherstatsCtrl">
+  <h3>Weather Stats</h3>
+  <div class="container">
+    <input type="button" ng-click="getStats()" value="Average Weather">
+    <input type="button" ng-click="login(true)" value="Login valido">
+    <input type="button" ng-click="login(false)" value="Login invalido">
+    <br>
+    <div ng-repeat="result in results">
+      {{result.City}}: {{result.Temperature}}
+    </div>
+  </div>
+</div>
