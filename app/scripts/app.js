@@ -54,6 +54,11 @@ angular
         controller: 'WeatherstatsCtrl',
         controllerAs: 'weatherStats'
       })
+      .when('/summary', {
+        templateUrl: 'views/summary.html',
+        controller: 'SummaryCtrl',
+        controllerAs: 'summary'
+      })
       .otherwise({
         redirectTo: '/'
       });

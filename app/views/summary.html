@@ -1,0 +1,205 @@
+<h3><b>AWS Well-Architected Framework – Summary</b></h3>
+<p>
+  El documento de Well-Architected Framework de AWS se enfoca en los principios generales de diseño en las arquitecturas
+  basadas en la plataforma Cloud, así como prácticas que permiten a los usuarios mejorar las arquitecturas de sus
+  aplicaciones. Este documento muestra los pros y contras de las decisiones que se hacen mientras se construye el
+  sistema en AWS, y contiene preguntas que permiten entender si una arquitectura en específica se alinea a las mejores
+  prácticas en Cloud.
+  <br>
+  <br>
+  Como fue mencionado anteriormente, este Framework contiene principios generales de diseño. Uno de ellos es evitar
+  adivinar la capacidad que el sistema necesita utilizar, es decir, eliminar el riesgo de gastar recursos de más, o que
+  el sistema falle por falta de recursos. Con la computación en Cloud, la capacidad es dinámica, por lo que puede subir
+  o bajar dependiendo de los recursos que finalmente utilice. Otro principio es permitir arquitecturas que evolucionan
+  en base a cambios en la empresa, en el contexto, o incluso el cambio en la demanda. En Cloud, se pueden automatizar y
+  probar los sistemas en un entorno de producción, y reduce el impacto de cambios en diseño.
+  <br>
+  <br>
+  El Framework de AWS se basa en cuatro pilares:
+  <br>
+  <ul>
+    <li>Seguridad: Proteger la información, los sistemas y los recursos mediante estrategias de mitigación</li>
+    <li>Confiabilidad: Recuperarse de errores de infraestructura o de servicio, adquiriendo recursos computacionales
+      para cumplir la demanda, y mitigar interrupciones</li>
+    <li>Eficiencia en rendimiento: Usar recursos eficientemente para cumplir los requerimientos del sistema, y mantener
+      esa eficiencia cuando evolucione la tecnología</li>
+    <li>Optimización de costo: Evitar o eliminar costo innecesario o recursos no óptimos</li>
+  </ul>
+  <br>
+  <h4>Seguridad</h4>
+  Los principios de diseño en esta área incluyen aplicar seguridad a todas las capas del sistema, incluyendo el servidor
+  virtual, la balanza de carga, entre los otros recursos utilizados, mediante firewalls y otros controles. Además, todas
+  las acciones y cambios que se lleven a cabo se tienen que registrar en un historial, además de que se debe monitorear
+  automáticamente las respuestas de notificaciones y alertas.
+  <br>
+  <br>
+  La seguridad en Cloud está compuesta por 4 áreas:
+  <br>
+  <br>
+  <ul>
+    <li>Protección de datos: involucra el uso de controles y patrones diseñados para mantener los datos confidenciales
+      dentro del sistema, y al mismo tiempo se encuentran disponibles para el usuario. Para esta área, AWS ha
+      implementado Server Side Encryption (SSE) en Amazon S3, para almacenar los datos encriptados. Además, también
+      utiliza procesos de encriptación y desencriptación de datos de HTTP, los cuales son manejados por el Elastic Load
+      Balancing. El servicio Key Management Service (KMS) facilita a los usuarios crear y controlar llaves utilizadas
+      para encriptado de datos.</li>
+    <li>Manejo de privilegios: se asegura que solamente los usuarios autorizados tengan algún tipo de acceso a los
+      recursos. Para ello, se utiliza el servicio Identity and Access Management (IAM), el cual otorga distintas pólizas
+      a cada tipo de usuario, grupo y rol, dependiendo del recurso que desean utilizar en AWS. La autenticación de
+      múltiples factores (MFA) añade una capa extra de protección.</li>
+    <li>Protección de infraestructura: utiliza metodologías del control necesarias para cumplir prácticas eficientes y
+      obligaciones de la industria, como autenticación de múltiples factores. Para esto, se puede implementar
+      inspectores de paquetes utilizando tecnologías nativas de AWS o usando productos y servicios disponibles mediante
+      el mercado, o utilizar Virtual Private Cloud (VPC) para crear un entorno privado, seguro y escalable en donde se
+      puede definir la topología que se utilizará en el sistema.</li>
+    <li>Controles de detección: estos controles se utilizan para detectar o identificar una violación en la seguridad.
+      AWS utiliza CloudTrail para registrar las llamadas del API y sus detalles, además de CloudWatch, el cual es un
+      servicio de monitoreo para los recursos de AWS que registran la actividad del sistema. Para ver la información
+      sobre las configuraciones y cambios en la infraestructura, se utiliza el servicio AWS Config.</li>
+  </ul>
+  <br>
+  <i>Mejores prácticas:</i>
+  <br>
+  <br>
+  <ul>
+    <li>Datos en reposo son encriptados utilizando controles específicos de un servicio de AWS</li>
+    <li>Las APIs de AWS con SSL habilitado son usados apropiadamente</li>
+    <li>Las credenciales de la cuenta principal de AWS solamente son usados para actividades mínimas requeridas</li>
+    <li>Uso de usuarios y grupos de IAM</li>
+    <li>Se usa la credencial del usuario IAM, pero no codificado en aplicaciones y scripts</li>
+    <li>Se usa una póliza apropiada de rotación de llaves y credenciales</li>
+    <li>Se llevan a cabo regularmente pruebas de seguridad</li>
+    <li>Uso de AWS CloudTrail</li>
+  </ul>
+  <br>
+  <h4>Confiabilidad</h4>
+  Uno de los principios dentro del pilar de confiabilidad es probar cómo el sistema puede fallar, y cómo se recupera de
+  estas fallas, implementando métodos de recuperación en escenarios recreados dentro de Cloud. De esta manera, se reduce
+  el riesgo de que los componentes del sistema fallen. Otro principio es el monitoreo de la demanda y el uso del sistema,
+  además de automatizar el aumento o remoción de recursos para mantener un nivel óptimo de rendimiento.
+  <br>
+  <br>
+  Éstas son las áreas del pilar de confiabilidad:
+  <br>
+  <br>
+  <ul>
+    <li>Cimientos: El sistema debe tener requerimientos esenciales dentro del área de confiabilidad. En AWS, la mayoría
+      de estos requerimientos ya se encuentran incorporados, o se integran cuando se necesitan. Es responsabilidad de
+      AWS de satisfacer el requerimiento para que tenga suficiente capacidad computacional. El servicio de Identity and
+      Access Management (IAM) permite al usuario controlar el acceso a los servicios y recursos de AWS.</li>
+    <li>Manejo de cambios: Mediante el monitoreo de cambios que se llevan a cabo dentro el sistema y cómo éstos afectan
+      al sistema permiten al usuario planear. Para esta área, CloudTrail graba las llamadas de APIs en AWS, mientras que
+      AWS Config graba los cambios en configuraciones de los recursos de AWS.</li>
+    <li>Manejo de errores: AWS toma ventaja de la automatización para responder en base a los datos monitoreados. En
+      caso de que un recurso falle dentro del entorno de producción, se puede reemplazar con un nuevo recurso para
+      seguir con el análisis. CloudFormation permite crear estos recursos mediante plantillas.</li>
+  </ul>
+  <br>
+  <i>Mejores prácticas:</i>
+  <br>
+  <br>
+  <ul>
+    <li>Preparar monitoreo automático</li>
+    <li>Conectividad de alta disponibilidad a AWS</li>
+    <li>Compromiso con AWS Support o algún socio de APN</li>
+    <li>Usar servicios automáticamente escalables (S3, CloudFront, Auto Scaling, etc.)</li>
+    <li>Monitorear aplicaciones con CloudWatch</li>
+    <li>Implementación automática</li>
+    <li>Respaldar datos importantes utilizando S3</li>
+    <li>Distribuir aplicaciones en múltiples regiones de disponibilidad</li>
+    <li>Establecer una estrategia de recuperación ante desastres</li>
+  </ul>
+  <br>
+  <h4>Eficiencia en rendimiento</h4>
+  La eficiencia en Cloud puede ser alcanzada mediante varios principios. Uno de ellos es utilizar tecnologías avanzadas
+  que AWS proporciona, y dejar que ésta se encargue de proporcionar a los usuarios las herramientas necesarias para que
+  puedan consumirlas como servicios. Otra de ellas es que el sistema se encuentre disponible en múltiples regiones con
+  mínima dificultad. Por último, se propone utilizar arquitecturas sin la necesidad de mantener servidores para llevar a
+  cabo actividades de cómputo, de manera que los servicios de depósito pueden actuar como sitios web estáticos.
+  <br>
+  <br>
+  En cuando a las áreas, la eficiencia está compuesta de cuatro:
+  <br>
+  <br>
+  <ul>
+    <li>Computación: Para ser eficiente, se necesita que el servidor esté configurado de la manera correcta, dependiendo
+      del diseño de la aplicación, los usos, y las opciones de configuración. En AWS, los servidores están
+      virtualizados, y sus capacidades pueden ser cambiados fácilmente, de manera que se puede experimentar con
+      distintos tipos de servicios. El servicio Auto Scaling asegura al usuario que tiene las instancias suficientes
+      para cumplir la demanda.</li>
+    <li>Almacenamiento: La solución de almacenamiento óptimo para un sistema depende del método, los patrones y la
+      frecuencia de acceso al sistema. Así como los servidores, el almacenamiento también es virtualizado, lo cual hace
+      más fácil vincular los métodos de almacenamiento con las necesidades del cliente. Amazon EBS provee al usuario con
+      una variedad de opciones de almacenamiento de datos, como SSD.</li>
+    <li>Base de datos: Dependiendo de las necesidades del sistema, el usuario necesita escoger la mejor opción de base
+      de datos. En AWS, se encuentran dos servicios de bases de datos: Relational Database Service (RDS) y DynamoDB. RDS
+      provee con una base de datos relacional, mientras que DynamoDB es una base de datos no relacional, o NoSQL. Cada
+      servicio ofrece ciertas características que el usuario puede modificar para optimizar su sistema.</li>
+    <li>Compensación de espacio-tiempo: Cada sistema, para alcanzar una eficiencia óptima, debe tener un equilibrio
+      entre la memoria que usa y el tiempo de cómputo. AWS ayuda al usuario a mandar sus recursos a múltiples servidores
+      alrededor del mundo para que los usuarios que quieran acceder al sistema tengan los recursos a su alcance.</li>
+  </ul>
+  <br>
+  <i>Mejores prácticas:</i>
+  <br>
+  <br>
+  <ul>
+    <li>Selecciona los siguientes recursos basado en necesidades previstas de recursos</li>
+    <ul>
+      <li>Tipo y tamaño de la instancia</li>
+      <li>Solución de almacenamiento</li>
+      <li>Soluciones de bases de datos</li>
+      <li>Soluciones de proximidad y almacenamiento de caché</li>
+    </ul>
+    <li>Revisar y volver a seleccionar los recursos anteriores basado en actuales necesidades previstas de recursos</li>
+    <li>Utilizar CloudWatch para monitorear los recursos mencionados</li>
+    <li>Planear la cantidad de recursos basado en métricas y/o eventos planeados</li>
+  </ul>
+  <br>
+  <h4>Optimización de costo</h4>
+  Entre la lista de principios en el área de costo, se encuentra el uso de servicios manejados por AWS, de manera que
+  esto elimina la carga de mantener servidores para que lleven operaciones como mandar correos o manejar bases de datos.
+  Debido a que estos servicios se manejan en la escala de Cloud, se puede ofrecer un menor costo por transacción o
+  servicio. Además, el documento menciona que conviene pagar por los recursos computacionales que se consume en vez de
+  invertir en servidores antes de conocer cómo se van a usar. De esta manera, los usuarios se pueden enfocar más en la
+  parte de negocios en vez de la infraestructura del servidor.
+  <br>
+  Éstas son las áreas que componen el pilar de optimización de costo:
+  <br>
+  <br>
+  <ul>
+    <li>Emparejado de suministro y demanda: El par correcto de suministro y demanda lleva a los menores costos para un
+      sistema, pero debe haber la cantidad de suministro adicional suficiente para proveer en caso de que algunos
+      recursos fallen. Auto Scaling permite añadir o remover recursos para emparejar la demanda sin gastar de más.</li>
+    <li>Recursos rentables: Un sistema con una buena arquitectura debe usar las instancias y los recursos apropiados
+      para ahorrar gastos, lo cual puede provocar un impacto económico positivo. Para reducir el costo, AWS permite al
+      usuario usar instancias reservadas, y el servicio Trusted Advisor puede ser usado para inspeccionar su entorno de
+      AWS y encontrar oportunidades para ahorrar dinero.</li>
+    <li>Conciencia de gastos: La capacidad de atribuir costos de recursos a negocios individuales o a los dueños del
+      producto lleva a un comportamiento de uso eficiente y ayuda a reducir los gastos. En AWS, Amazon CloudWatch y las
+      notificaciones de Simple Notification Service (SNS) previenen al usuario en caso de que haya gastado, o esté
+      pronosticado a gastar, más de lo presupuestado.</li>
+    <li>Optimización a través del tiempo: Cuando AWS lanza nuevos servicios, el usuario necesita revalorar la
+      arquitectura de su sistema para analizar si puede ahorrar más con los nuevos servicios. Para ello, puede consultar
+      el blog de AWS y la sección “What’s New” en su sitio web para conocer sobre los nuevos servicios.</li>
+  </ul>
+  <br>
+  <i>Mejores prácticas:</i>
+  <br>
+  <br>
+  <ul>
+    <li>Usar Auto Scaling para responder la demanda variable</li>
+    <li>Llevar a cabo optimizaciones específicas del servicio</li>
+    <li>Usar CloudWatch para determinar la carga del procesador</li>
+    <li>Usar instancias Spot para seleccionar cargas de trabajo</li>
+    <li>Analizar servicios a nivel de aplicación para determinar cuáles se pueden usar</li>
+    <li>Establecer grupos y roles</li>
+    <li>Etiquetar todos los recursos de AWS</li>
+    <li>Diseñar el sistema para manejar cuidadosamente la terminación de instancias cuando se identifican instancias no
+      requeridas o recursos con baja utilización</li>
+    <li>Utilizar un CDN de CloudFront</li>
+    <li>Reunirse regularmente con arquitectos, consultores o el equipo de cuentas de AWS Solutions, y considerar cuáles
+      servicios nuevos se podría adoptar para ahorrar dinero</li>
+  </ul>
+  <br>
+</p>
